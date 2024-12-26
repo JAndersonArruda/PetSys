@@ -28,4 +28,43 @@ export default function configurePetShopsRoutes(router: Router) {
     
         res.status(200).send(petshop);
     });
+
+    router.post('/petshops', (req: Request, res: Response, next: NextFunction) => {
+        const { name, cnpj } = req.body;
+
+        if (!name && !cnpj) {
+            res.status(400).json({ error: "Missing required fields: name, cnpj" });
+            return;
+        }
+        
+        if (!name) {
+            res.status(400).json({ error: "Missing required fields: name" });
+            return;
+        }
+
+        if (!cnpj) {
+            res.status(400).json({ error: "Missing required fields: cnpj" });
+            return;
+        }
+
+        if (petshops.find(petshop => petshop.cnpj === cnpj)) {
+            res.status(400).json({ error: "CNPJ already registered" });
+            return;
+        }
+
+        const newPetshop: PetShop = {
+            id: uuidv4(),
+            name: name,
+            cnpj: cnpj,
+            pets: []
+        };
+
+        if(!newPetshop) {
+            res.status(500).json({ error: "Failed to create petshop" });
+            return;
+        }
+
+        petshops.push(newPetshop);
+        res.status(201).send(newPetshop);
+    });
 }
