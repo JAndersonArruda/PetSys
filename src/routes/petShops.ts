@@ -36,7 +36,7 @@ export default function configurePetShopsRoutes(router: Router) {
             res.status(400).json({ error: "Missing required fields: name, cnpj" });
             return;
         }
-        
+
         if (!name) {
             res.status(400).json({ error: "Missing required fields: name" });
             return;
@@ -66,5 +66,30 @@ export default function configurePetShopsRoutes(router: Router) {
 
         petshops.push(newPetshop);
         res.status(201).send(newPetshop);
+    });
+
+    router.put('/petshops/:id', (req: Request, res: Response, next: NextFunction) => {
+        const id = req.params.id;
+        const petshop = petshops.find(petshop => petshop.id === id);
+
+        if (!petshop) {
+            res.status(404).json({ error: "Petshop not found" });
+            return;
+        }
+
+        const data = req.body;
+
+        if (!data || Object.keys(data).length === 0) {
+            res.status(400).json({ error: "Missing required fields from update" });
+            return;
+        }
+    
+        if (data.cnpj) {
+            res.status(400).json({ error: "Field 'cnpj' cannot be updated" })
+            return;
+        }
+
+        if (data.name) petshop.name = data.name;
+        res.status(200).json({ message: "Update successful" });
     });
 }
