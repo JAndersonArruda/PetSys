@@ -10,7 +10,7 @@ interface PetShop {
     pets: Pets[]
 }
 
-const petshops: PetShop[] = [];
+let petshops: PetShop[] = [];
 
 export default function configurePetShopsRoutes(router: Router) {
     router.get('/petshops', (req: Request, res: Response) => {
@@ -91,5 +91,18 @@ export default function configurePetShopsRoutes(router: Router) {
 
         if (data.name) petshop.name = data.name;
         res.status(200).json({ message: "Update successful" });
+    });
+
+    router.delete('/petshops/:id', (req: Request, res: Response, next: NextFunction) => {
+        const id = req.params.id;
+        const dellShop = petshops.find(petshop => petshop.id === id);
+
+        if (!dellShop) {
+            res.status(400).json({ error: "Petshop not found" });
+            return;
+        }
+
+        petshops = petshops.filter(petshop => petshop.id !== id);
+        res.status(200).json({ message: "Petshop deleted successfully" });
     });
 }
