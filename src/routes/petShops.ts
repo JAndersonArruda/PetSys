@@ -1,61 +1,42 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
+import verifyPetshopById from '../utils/middlewares/verifyPetshopById';
+import verifyPetshopBoryData from '../utils/middlewares/verifyPetshopBoryData';
+
+import { petshops } from './store';
+
 import { Pets } from './pets';
 
-interface PetShop {
+export interface PetShop {
     id: string,
     name: string,
     cnpj: string,
     pets: Pets[]
 }
 
-let petshops: PetShop[] = [];
-
 export default function configurePetShopsRoutes(router: Router) {
     router.get('/petshops', (req: Request, res: Response) => {
         res.status(200).send(petshops);
     });
     
-    router.get('/petshops/:id', (req: Request, res: Response, next: NextFunction) => {
-        const id = req.params.id;
-        const petshop = petshops.find((petshop) => petshop.id === id);
-    
-        if (!petshop) {
-            res.status(400).json({ error: "petshop not found" });
-            return;
-        }
-    
+    router.get('/petshops/:id', verifyPetshopById, (req: Request, res: Response) => {
+        const petshop = req.petshop;    
         res.status(200).send(petshop);
     });
 
-    router.post('/petshops', (req: Request, res: Response, next: NextFunction) => {
-        const { name, cnpj } = req.body;
+    router.post('/petshops', verifyPetshopBoryData, (req: Request, res: Response) => {
+        const data = req.data! as PetShop;
 
-        if (!name && !cnpj) {
-            res.status(400).json({ error: "Missing required fields: name, cnpj" });
-            return;
-        }
-
-        if (!name) {
-            res.status(400).json({ error: "Missing required fields: name" });
-            return;
-        }
-
-        if (!cnpj) {
-            res.status(400).json({ error: "Missing required fields: cnpj" });
-            return;
-        }
-
-        if (petshops.find(petshop => petshop.cnpj === cnpj)) {
+        if (petshops.find(petshop => petshop.cnpj === data.cnpj)) {
             res.status(400).json({ error: "CNPJ already registered" });
             return;
         }
 
         const newPetshop: PetShop = {
             id: uuidv4(),
-            name: name,
-            cnpj: cnpj,
+            name: data.name,
+            cnpj: data.cnpj,
             pets: []
         };
 
@@ -68,22 +49,10 @@ export default function configurePetShopsRoutes(router: Router) {
         res.status(201).send(newPetshop);
     });
 
-    router.put('/petshops/:id', (req: Request, res: Response, next: NextFunction) => {
-        const id = req.params.id;
-        const petshop = petshops.find(petshop => petshop.id === id);
+    router.put('/petshops/:id', verifyPetshopById, verifyPetshopBoryData, (req: Request, res: Response) => {
+        const data = req.data!;
+        const petshop = req.petshop!;
 
-        if (!petshop) {
-            res.status(404).json({ error: "Petshop not found" });
-            return;
-        }
-
-        const data = req.body;
-
-        if (!data || Object.keys(data).length === 0) {
-            res.status(400).json({ error: "Missing required fields from update" });
-            return;
-        }
-    
         if (data.cnpj) {
             res.status(400).json({ error: "Field 'cnpj' cannot be updated" })
             return;
@@ -93,16 +62,10 @@ export default function configurePetShopsRoutes(router: Router) {
         res.status(200).json({ message: "Update successful" });
     });
 
-    router.delete('/petshops/:id', (req: Request, res: Response, next: NextFunction) => {
+    router.delete('/petshops/:id', verifyPetshopById, (req: Request, res: Response) => {
         const id = req.params.id;
-        const dellShop = petshops.find(petshop => petshop.id === id);
 
-        if (!dellShop) {
-            res.status(400).json({ error: "Petshop not found" });
-            return;
-        }
-
-        petshops = petshops.filter(petshop => petshop.id !== id);
+        petshops.splice(petshops.findIndex(petshop => petshop.id === id), 1);
         res.status(200).json({ message: "Petshop deleted successfully" });
     });
 }
