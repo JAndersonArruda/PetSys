@@ -106,4 +106,28 @@ export default function configurePetRoutes(router: Router) {
 
         res.status(200).json({ messsage: "Update successfy" });
     });
+
+    router.delete('/pets/:id', (req: Request, res: Response) => {
+        const cnpjPetshop = req.headers['cnpj'];
+        if(!cnpjPetshop) {
+            res.status(400).json({ error: "Missing required header 'cnpj'" });
+            return;
+        }
+
+        const petshop = petshops.find(petshop => petshop.cnpj === cnpjPetshop);
+        if (!petshop) {
+            res.status(400).json({ error: "Petshop not found" });
+            return;
+        }
+
+        const id = req.params.id;
+        const petIndex = petshop.pets.findIndex(pet => pet.id === id);
+        if(petIndex === -1) {
+            res.status(400).json({ error: "Pet not found" });
+            return;
+        }
+
+        petshop.pets.splice(petIndex, 1);
+        res.status(200).json({ message: "Delete successfy" });
+    });
 }
