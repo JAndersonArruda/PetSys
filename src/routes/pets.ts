@@ -33,22 +33,7 @@ export default function configurePetRoutes(router: Router) {
     router.post('/pets', (req: Request, res: Response) => {
         const data = req.body as Pets;
         const cnpjPetshop = req.headers['cnpj'];
-
-        const newPet: Pets = {
-            id: uuidv4(),
-            name: data.name,
-            type: data.type,
-            description: data.description,
-            vaccinated: data.vaccinated,
-            deadline_vaccination: data.deadline_vaccination,
-            created_at: new Date()
-        }
-
-        if(!newPet) {
-            res.status(500).json({ error: "Failed to create pet" });
-            return;
-        }
-
+        
         if(!cnpjPetshop) {
             res.status(400).json({ error: "Missing required header 'cnpj'" });
             return;
@@ -61,9 +46,22 @@ export default function configurePetRoutes(router: Router) {
             return;
         }
 
-        petshop.pets.push(newPet);
+        const newPet: Pets = {
+            id: uuidv4(),
+            name: data.name,
+            type: data.type,
+            description: data.description,
+            vaccinated: data.vaccinated,
+            deadline_vaccination: data.deadline_vaccination,
+            created_at: new Date()
+        }
+        
+        if(!newPet) {
+            res.status(500).json({ error: "Failed to create pet" });
+            return;
+        }     
 
-        pets.push(newPet);
+        petshop.pets.push(newPet);
         res.status(201).send(newPet);
     });
 }
