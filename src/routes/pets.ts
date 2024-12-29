@@ -15,6 +15,13 @@ export interface Pets {
 
 export default function configurePetRoutes(router: Router) {
     router.get('/pets', (req: Request, res: Response) => {
+        pets.length = 0;
+        petshops.forEach(petshop => {
+            petshop.pets.forEach(pet => {
+                pets.push(pet);
+            });
+        });
+        pets.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         res.status(200).send(pets);
     });
 
