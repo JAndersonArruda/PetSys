@@ -71,4 +71,39 @@ export default function configurePetRoutes(router: Router) {
         petshop.pets.push(newPet);
         res.status(201).send(newPet);
     });
+
+    router.put('/pets/:id', (req: Request, res: Response) => {
+        const data = req.body as Pets;
+        if (!data || Object.keys(data).length === 0) {
+            res.status(400).json({ error: "Missing required fields" });
+            return;
+        }
+
+        const cnpjPetshop = req.headers['cnpj'];
+        if(!cnpjPetshop) {
+            res.status(400).json({ error: "Missing required header 'cnpj'" });
+            return;
+        }
+
+        const petshop = petshops.find((petshop) => petshop.cnpj === cnpjPetshop);
+        if (!petshop) {
+            res.status(400).json({ error: "Petshop not found" });
+            return;
+        }
+
+        const id = req.params.id;
+        const pet = petshop.pets.find((pet) => pet.id === id);
+        if(!pet) {
+            res.status(400).json({ error: "Pet not found" });
+            return;
+        }
+
+        pet.name = data.name;
+        pet.type = data.type;
+        pet.description = data.description;
+        pet.vaccinated = data.vaccinated;
+        pet.deadline_vaccination = data.deadline_vaccination;
+
+        res.status(200).json({ messsage: "Update successfy" });
+    });
 }
