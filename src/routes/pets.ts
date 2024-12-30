@@ -24,15 +24,8 @@ export default function configurePetRoutes(router: Router) {
         res.status(200).send(petshop.pets);
     });
 
-    router.get('/pets/:id', (req: Request, res: Response) => {
-        const id  = req.params.id;
-        const pet = pets.find((pet) => pet.id === id);
-
-        if (!pet) {
-            res.status(400).json({ error: "pet not found" });
-            return;
-        }
-
+    router.get('/pets/:id', checkExistsUserAccount, verifyPetById, (req: Request, res: Response) => {
+        const pet = req.pet!;
         res.status(200).send(pet);
     });
 
