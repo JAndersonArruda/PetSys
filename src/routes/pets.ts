@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { pets, petshops } from './store';
+import checkExistsUserAccount from '../utils/middlewares/checkExistsUserAccount';
 
 
 export interface Pets {
@@ -14,15 +15,9 @@ export interface Pets {
 }
 
 export default function configurePetRoutes(router: Router) {
-    router.get('/pets', (req: Request, res: Response) => {
-        pets.length = 0;
-        petshops.forEach(petshop => {
-            petshop.pets.forEach(pet => {
-                pets.push(pet);
-            });
-        });
-        pets.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-        res.status(200).send(pets);
+    router.get('/pets', checkExistsUserAccount, (req: Request, res: Response) => {
+        const petshop = req.petshop!;
+        res.status(200).send(petshop.pets);
     });
 
     router.get('/pets/:id', (req: Request, res: Response) => {
