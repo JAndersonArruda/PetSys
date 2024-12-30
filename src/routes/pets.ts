@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import checkExistsUserAccount from '../utils/middlewares/checkExistsUserAccount';
 
 import { pets, petshops } from './store';
-import { verify } from 'crypto';
 import verifyPetById from '../utils/middlewares/verifyPetById';
 import verifyBodyData from '../utils/middlewares/verifyBodyData';
 import requiredBodyData from '../utils/middlewares/requiredBodyData';
@@ -63,6 +62,12 @@ export default function configurePetRoutes(router: Router) {
         pet.deadline_vaccination = data.deadline_vaccination;
 
         res.status(200).json({ messsage: "Update successfy" });
+    });
+
+    router.patch('/pets/:id/vaccinated', checkExistsUserAccount, verifyPetById, (req: Request, res: Response) => {
+        const pet = req.pet!;
+        pet.vaccinated = true;
+        res.status(200).send({ message: "vaccinated successfully" });
     });
 
     router.delete('/pets/:id', (req: Request, res: Response) => {
