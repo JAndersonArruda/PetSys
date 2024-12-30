@@ -8,6 +8,7 @@ import validateCnpj from '../utils/middlewares/validateCnpj';
 // import { petshops } from './store';
 
 import { Pets } from './pets';
+import checkExistsPet from '../utils/middlewares/checkExistsPet';
 
 export interface PetShop {
     id: string,
@@ -65,10 +66,10 @@ export default function configurePetShopsRoutes(router: Router) {
         res.status(200).json({ message: "Update successful" });
     });
 
-    router.delete('/petshops/:id', verifyPetshopById, (req: Request, res: Response) => {
-        const id = req.params.id;
+    router.delete('/petshops/:id', verifyPetshopById, checkExistsPet, (req: Request, res: Response) => {
+        const petshop = req.petshop!;
 
-        petshops.splice(petshops.findIndex(petshop => petshop.id === id), 1);
+        petshops.splice(petshops.indexOf(petshop), 1);
         res.status(200).json({ message: "Petshop deleted successfully" });
     });
 }
