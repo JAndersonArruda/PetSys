@@ -62,7 +62,7 @@ export default function configurePetRoutes(router: Router) {
         pet.description = data.description;
         pet.deadline_vaccination = data.deadline_vaccination;
 
-        res.status(200).json({ messsage: "Update successfy" });
+        res.status(200).json({ messsage: "Update successfully" });
     });
 
     router.patch('/pets/:id/vaccinated', checkExistsUserAccount, verifyPetById, (req: Request, res: Response) => {
