@@ -1,12 +1,13 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
 import verifyPetshopById from '../utils/middlewares/verifyPetshopById';
-import verifyPetshopBoryData from '../utils/middlewares/verifyPetshopBoryData';
 
 import { petshops } from './store';
 
 import { Pets } from './pets';
+import verifyBodyData from '../utils/middlewares/verifyBodyData';
+import validateCnpj from '../utils/middlewares/validateCnpj';
 
 export interface PetShop {
     id: string,
@@ -25,8 +26,8 @@ export default function configurePetShopsRoutes(router: Router) {
         res.status(200).send(petshop);
     });
 
-    router.post('/petshops', verifyPetshopBoryData, (req: Request, res: Response) => {
-        const data = req.data! as PetShop;
+    router.post('/petshops', verifyBodyData, validateCnpj, (req: Request, res: Response) => {
+        const data = req.body as PetShop;
 
         if (petshops.find(petshop => petshop.cnpj === data.cnpj)) {
             res.status(400).json({ error: "CNPJ already registered" });
@@ -49,9 +50,9 @@ export default function configurePetShopsRoutes(router: Router) {
         res.status(201).send(newPetshop);
     });
 
-    router.put('/petshops/:id', verifyPetshopById, verifyPetshopBoryData, (req: Request, res: Response) => {
-        const data = req.data!;
+    router.put('/petshops/:id', verifyPetshopById, verifyBodyData, (req: Request, res: Response) => {
         const petshop = req.petshop!;
+        const data = req.body;
 
         if (data.cnpj) {
             res.status(400).json({ error: "Field 'cnpj' cannot be updated" })
