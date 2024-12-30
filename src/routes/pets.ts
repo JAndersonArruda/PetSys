@@ -1,8 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { pets, petshops } from './store';
+
 import checkExistsUserAccount from '../utils/middlewares/checkExistsUserAccount';
 
+import { pets, petshops } from './store';
+import { verify } from 'crypto';
+import verifyPetById from '../utils/middlewares/verifyPetById';
+import verifyBodyData from '../utils/middlewares/verifyBodyData';
 
 export interface Pets {
     id: string,
@@ -32,28 +36,16 @@ export default function configurePetRoutes(router: Router) {
         res.status(200).send(pet);
     });
 
-    router.post('/pets', (req: Request, res: Response) => {
+    router.post('/pets', checkExistsUserAccount, verifyBodyData, (req: Request, res: Response) => {
+        const petshop = req.petshop!;
         const data = req.body as Pets;
-        const cnpjPetshop = req.headers['cnpj'];
-        
-        if(!cnpjPetshop) {
-            res.status(400).json({ error: "Missing required header 'cnpj'" });
-            return;
-        }
-
-        const petshop = petshops.find((petshop) => petshop.cnpj === cnpjPetshop);
-
-        if(!petshop) {
-            res.status(400).json({ error: "Petshop not found" });
-            return;
-        }
 
         const newPet: Pets = {
             id: uuidv4(),
             name: data.name,
             type: data.type,
             description: data.description,
-            vaccinated: data.vaccinated,
+            vaccinated: false,
             deadline_vaccination: data.deadline_vaccination,
             created_at: new Date()
         }
