@@ -4,11 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import verifyPetshopById from '../utils/middlewares/verifyPetshopById';
 import verifyBodyData from '../utils/middlewares/verifyBodyData';
 import validateCnpj from '../utils/middlewares/validateCnpj';
-
-// import { petshops } from './store';
+import checkExistsPet from '../utils/middlewares/checkExistsPet';
 
 import { Pets } from './pets';
-import checkExistsPet from '../utils/middlewares/checkExistsPet';
 
 export interface PetShop {
     id: string,
