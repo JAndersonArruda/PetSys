@@ -12,7 +12,7 @@ const checkExistsUserAccount = (req: Request, res: Response, next: NextFunction)
     const user = petshops.find(petshop => petshop.cnpj === cnpjUser);
 
     if (!user) {
-        res.status(400).json({ error: "User account not exists" });
+        res.status(404).json({ error: "User account not exists" });
         return;
     }
 
