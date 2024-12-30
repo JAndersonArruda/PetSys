@@ -71,27 +71,11 @@ export default function configurePetRoutes(router: Router) {
         res.status(200).send({ message: "vaccinated successfully" });
     });
 
-    router.delete('/pets/:id', (req: Request, res: Response) => {
-        const cnpjPetshop = req.headers['cnpj'];
-        if(!cnpjPetshop) {
-            res.status(400).json({ error: "Missing required header 'cnpj'" });
-            return;
-        }
+    router.delete('/pets/:id', checkExistsUserAccount, verifyPetById, (req: Request, res: Response) => {
+        const petshop = req.petshop!;
+        const pet = req.pet!;
 
-        const petshop = petshops.find(petshop => petshop.cnpj === cnpjPetshop);
-        if (!petshop) {
-            res.status(400).json({ error: "Petshop not found" });
-            return;
-        }
-
-        const id = req.params.id;
-        const petIndex = petshop.pets.findIndex(pet => pet.id === id);
-        if(petIndex === -1) {
-            res.status(400).json({ error: "Pet not found" });
-            return;
-        }
-
-        petshop.pets.splice(petIndex, 1);
-        res.status(200).json({ message: "Delete successfy" });
+        petshop.pets.splice(petshop.pets.indexOf(pet), 1);
+        res.status(200).json({ message: "Delete successfully" });
     });
 }
