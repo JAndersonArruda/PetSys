@@ -5,7 +5,7 @@ import verifyPetshopById from '../utils/middlewares/verifyPetshopById';
 import verifyBodyData from '../utils/middlewares/verifyBodyData';
 import validateCnpj from '../utils/middlewares/validateCnpj';
 
-import { petshops } from './store';
+// import { petshops } from './store';
 
 import { Pets } from './pets';
 
@@ -15,6 +15,8 @@ export interface PetShop {
     cnpj: string,
     pets: Pets[]
 }
+
+export let petshops: PetShop[] = [];
 
 export default function configurePetShopsRoutes(router: Router) {
     router.get('/petshops', (req: Request, res: Response) => {

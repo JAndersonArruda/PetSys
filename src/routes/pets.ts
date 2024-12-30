@@ -2,9 +2,6 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
 import checkExistsUserAccount from '../utils/middlewares/checkExistsUserAccount';
-
-import { petshops } from './store';
-
 import verifyPetById from '../utils/middlewares/verifyPetById';
 import verifyBodyData from '../utils/middlewares/verifyBodyData';
 import requiredBodyData from '../utils/middlewares/requiredBodyData';

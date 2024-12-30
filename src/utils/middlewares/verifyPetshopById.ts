@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { petshops } from "../../routes/store";
+import { petshops } from "../../routes/petShops";
 
 const verifyPetshopById = (req: Request, res: Response, next: NextFunction) => {
     const id  = req.params.id;

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { petshops } from "../../routes/store";
+import { petshops } from "../../routes/petShops";
 
 const checkExistsUserAccount = (req: Request, res: Response, next: NextFunction) => {
     const cnpjUser = req.headers['cnpj'];
