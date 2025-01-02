@@ -73,6 +73,8 @@ export default function configurePetRoutes(router: Router) {
         const pet = req.pet!;
 
         petshop.pets.splice(petshop.pets.indexOf(pet), 1);
-        res.status(200).json({ message: "Delete successfully" });
+
+        const pets = req.petshop?.pets
+        res.status(200).json({ message: "Delete successfully", pets: pets });
     });
 }
